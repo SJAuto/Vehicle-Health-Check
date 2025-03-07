@@ -99,7 +99,18 @@
                 const password = document.getElementById('password').value;
                 
                 try {
-                    const response = await fetch('/api/login', {
+                    // Display loading state
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.textContent = 'Logging in...';
+                    submitButton.disabled = true;
+                    
+                    // Use the full URL for API requests when in production
+                    const apiUrl = window.location.hostname.includes('localhost') 
+                        ? '/api/login' 
+                        : '/api/login';
+                    
+                    const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -107,11 +118,16 @@
                         body: JSON.stringify({ username, password })
                     });
                     
-                    const data = await response.json();
+                    // Reset button state
+                    submitButton.textContent = originalButtonText;
+                    submitButton.disabled = false;
                     
                     if (!response.ok) {
-                        throw new Error(data.error || 'Login failed');
+                        const data = await response.json();
+                        throw new Error(data.error || `Login failed (${response.status})`);
                     }
+                    
+                    const data = await response.json();
                     
                     // Save token and user info
                     localStorage.setItem('token', data.token);
@@ -120,6 +136,7 @@
                     // Redirect to dashboard
                     window.location.href = 'dashboard.html';
                 } catch (error) {
+                    console.error('Login error:', error);
                     errorMessage.textContent = error.message;
                     errorMessage.style.display = 'block';
                 }

@@ -497,7 +497,13 @@ app.delete('/api/users/:id', authenticateToken, (req, res) => {
   });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-}); 
+// Export the Express API for Vercel
+if (process.env.VERCEL) {
+  // Export as serverless function
+  module.exports = app;
+} else {
+  // Start the server for local development
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+} 

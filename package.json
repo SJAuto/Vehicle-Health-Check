@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "echo 'Build step completed'"
+  },
+  "engines": {
+    "node": ">=14.x"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
